@@ -39,7 +39,7 @@ export function EmployeeAttendanceComponent() {
   }
 
   return (
-    <div className="min-h-screen p-8" style={{ backgroundColor: '#D8DEE9' }}>
+    <div className="min-h-screen text-gray-800 p-8" style={{ backgroundColor: '#D8DEE9' }}>
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="p-6">
           <h1 className="text-2xl font-bold mb-4" style={{ color: '#2E3440' }}>Historial de Entradas y Salidas</h1>

@@ -19,7 +19,7 @@ export function RegistroEmpleados() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F4F4F9]">
+    <div className="min-h-screen flex items-center text-gray-800 justify-center bg-[#F4F4F9]">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-lg" style={{boxShadow: '0 4px 6px rgba(46, 52, 64, 0.1)'}}>
         <h1 className="text-2xl font-bold text-center text-gray-800">Registro de Entrada y Salida</h1>
         

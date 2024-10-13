@@ -56,7 +56,7 @@ export function AdminPanel() {
   }
 
   return (
-    <div className="min-h-screen p-8" style={{ backgroundColor: '#D8DEE9' }}>
+    <div className="min-h-screen text-gray-800 p-8" style={{ backgroundColor: '#D8DEE9' }}>
       <h1 className="text-2xl font-bold mb-4">Panel de Administración de Registros</h1>
       {validationError && (
         <Alert className="mb-4" style={{ backgroundColor: '#EBCB8B', color: '#2E3440' }}>

@@ -3,6 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { Bell, Settings, User, Menu } from 'lucide-react'
+import Image from 'next/image'
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -17,7 +18,7 @@ export function NavbarComponent() {
     <nav className="bg-[#F4F4F9] border-b border-[#ECEFF4] p-4">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center">
-          <img src="/logo.svg" alt="Logo" className="h-8 w-8 mr-2" />
+          <Image src="/assets/logo.jpeg" alt="Logo" width={32} height={32} className="h-8 w-8 mr-2" />
           <span className="text-[#2E3440] font-semibold text-lg">Sistema de Gestión de Empleados</span>
         </div>
         
@@ -37,13 +38,13 @@ export function NavbarComponent() {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 bg-[#D8DEE9]">
               <DropdownMenuItem>
-                <Link href="/perfil" className="text-[#2E3440]">Perfil</Link>
+                <Link href="/" className="text-[#2E3440]">Perfil</Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link href="/configuracion" className="text-[#2E3440]">Configuración</Link>
+                <Link href="/" className="text-[#2E3440]">Configuración</Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link href="/logout" className="text-[#2E3440]">Cerrar Sesión</Link>
+                <Link href="/" className="text-[#2E3440]">Cerrar Sesión</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -70,7 +71,7 @@ export function NavbarComponent() {
                 <User className="h-5 w-5 mr-2 text-[#5E81AC]" />
                 Perfil
               </Link>
-              <Link href="/logout" className="flex items-center text-[#2E3440]">
+              <Link href="/" className="flex items-center text-[#2E3440]">
                 Cerrar Sesión
               </Link>
             </nav>

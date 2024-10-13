@@ -75,7 +75,7 @@ export function AttendanceReportComponent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F4F9] p-8">
+    <div className="min-h-screen bg-[#F4F4F9] text-gray-800 p-8">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">Dashboard de Asistencia</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">

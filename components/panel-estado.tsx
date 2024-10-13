@@ -30,7 +30,7 @@ const StatusPanel = ({ title, icon, status }: { title: string, icon: React.React
 
 export function PanelEstado() {
   return (
-    <div className="min-h-screen p-8" style={{ backgroundColor: "#F4F4F9" }}>
+    <div className="min-h-screen text-gray-800 p-8" style={{ backgroundColor: "#F4F4F9" }}>
       <h1 className="text-2xl font-bold mb-6">Panel de Estado del Sistema</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <StatusPanel title="Servidor Principal" icon={<Server className="text-gray-600" />} status="normal" />

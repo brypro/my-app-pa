@@ -60,7 +60,7 @@ export function AdminReportGeneratorComponent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F4F9] p-8">
+    <div className="min-h-screen text-gray-800 bg-[#F4F4F9] p-8">
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
         <h1 className="text-2xl font-bold mb-6">Generador de Reportes de Asistencia</h1>
         <form onSubmit={generateReport} className="mb-8">

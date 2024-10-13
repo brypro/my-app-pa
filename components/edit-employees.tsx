@@ -44,8 +44,8 @@ export function EditEmployeesComponent() {
   }
 
   return (
-    <div className="min-h-screen p-8" style={{ backgroundColor: '#F4F4F9' }}>
-      <h1 className="text-3xl font-bold mb-6">Panel de Administración de Empleados</h1>
+    <div className="min-h-screen p-8 text-gray-800" style={{ backgroundColor: '#F4F4F9' }}>
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Panel de Administración de Empleados</h1>
       <div className="mb-6 flex justify-between items-center">
         <Button 
           onClick={handleAddEmployee}

@@ -1,24 +1,32 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export function LoginScreenComponent() {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [errors, setErrors] = useState({ username: '', password: '' })
+  const router = useRouter();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({ username: '', password: '' });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Aquí iría la lógica de autenticación
-    // Por ahora, solo mostraremos errores de ejemplo
-    setErrors({
+    e.preventDefault();
+
+    // Validación simple de entrada
+    const newErrors = {
       username: username ? '' : 'El nombre de usuario es requerido',
-      password: password ? '' : 'La contraseña es requerida'
-    })
-  }
+      password: password ? '' : 'La contraseña es requerida',
+    };
+    setErrors(newErrors);
+
+    // Verifica si no hay errores antes de redirigir
+    if (!newErrors.username && !newErrors.password) {
+      router.push('/dashboard');
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F4F4F9]">
@@ -71,5 +79,5 @@ export function LoginScreenComponent() {
         </div>
       </div>
     </div>
-  )
+  );
 }
