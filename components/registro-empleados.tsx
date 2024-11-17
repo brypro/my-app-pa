@@ -14,7 +14,7 @@ export function RegistroEmpleados() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [employees, setEmployees] = useState<Record<string, any>[]>([])
 
-  const handleRegistro = async (tipo: 'entrada' | 'salida') => {
+  const handleRegistro = async () => {
     if (!empleadoId) {
       setMensaje('Por favor, ingrese un ID de empleado.')
       return
@@ -23,12 +23,10 @@ export function RegistroEmpleados() {
     try {
       const record = {
         empleadoId,
-        tipo,
-        // fecha sin hora
         timestamp: new Date().toISOString().split('T')[0]
       }
       await pb.collection('records').create(record)
-      setMensaje(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} registrada exitosamente para el empleado ${empleadoId}.`)
+      setMensaje(`Registro creado exitosamente para el empleado ${empleadoId}.`)
       setEmpleadoId('')
     } catch (error) {
       setMensaje('Error al registrar. Por favor, intente nuevamente.' + error)
@@ -73,14 +71,14 @@ export function RegistroEmpleados() {
           
           <div className="grid grid-cols-2 gap-4">
             <Button 
-              onClick={() => handleRegistro('entrada')}
+              onClick={handleRegistro}
               className="w-full py-3 text-white bg-[#81A1C1] hover:bg-[#5E81AC] transition-colors duration-200"
               style={{boxShadow: '0 2px 4px rgba(46, 52, 64, 0.1)'}}
             >
               Registrar Entrada
             </Button>
             <Button 
-              onClick={() => handleRegistro('salida')}
+              onClick={handleRegistro}
               className="w-full py-3 text-white bg-[#81A1C1] hover:bg-[#5E81AC] transition-colors duration-200"
               style={{boxShadow: '0 2px 4px rgba(46, 52, 64, 0.1)'}}
             >

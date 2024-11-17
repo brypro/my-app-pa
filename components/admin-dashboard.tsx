@@ -50,14 +50,13 @@ export function AdminDashboardComponent() {
   useEffect(() => {
     async function fetchData() {
       const employees = await pb.collection('employees').getFullList()
-      const entries = await pb.collection('entries').getFullList()
-      const exits = await pb.collection('exits').getFullList()
+      const records = await pb.collection('records').getFullList()
       const failures = await pb.collection('failures').getFullList()
       const reports = await pb.collection('reports').getFullList()
 
       setActiveEmployees(employees.length)
-      setRecentEntries(entries.length)
-      setRecentExits(exits.length)
+      setRecentEntries(records.filter(record => record.checkIn).length)
+      setRecentExits(records.filter(record => record.checkOut).length)
       setSystemFailures(failures.length)
       setPendingReports(reports.length)
     }
