@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, SetStateAction } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -9,8 +9,10 @@ import pb from '@/lib/pocketbase'
 export function RegistroEmpleados() {
   const [mensaje, setMensaje] = useState('')
   const [empleadoId, setEmpleadoId] = useState('')
-  const [selectedEmployee, setSelectedEmployee] = useState(null)
-  const [employees, setEmployees] = useState([])
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [selectedEmployee, setSelectedEmployee] = useState<Record<string, any> | null>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [employees, setEmployees] = useState<Record<string, any>[]>([])
 
   const handleRegistro = async (tipo: 'entrada' | 'salida') => {
     if (!empleadoId) {
@@ -22,17 +24,19 @@ export function RegistroEmpleados() {
       const record = {
         empleadoId,
         tipo,
-        timestamp: new Date().toISOString()
+        // fecha sin hora
+        timestamp: new Date().toISOString().split('T')[0]
       }
-      await pb.collection('registros').create(record)
+      await pb.collection('records').create(record)
       setMensaje(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} registrada exitosamente para el empleado ${empleadoId}.`)
       setEmpleadoId('')
     } catch (error) {
-      setMensaje('Error al registrar. Por favor, intente nuevamente.')
+      setMensaje('Error al registrar. Por favor, intente nuevamente.' + error)
     }
   }
 
-  const handleEmployeeClick = (employee) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleEmployeeClick = (employee: SetStateAction<any>) => {
     setSelectedEmployee(employee)
     setEmpleadoId(employee.id)
   }
