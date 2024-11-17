@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -8,28 +8,30 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
-
-// Mock data for demonstration
-const attendanceData = [
-  { id: 1, date: '2023-05-01', checkIn: '09:00', checkOut: '17:00' },
-  { id: 2, date: '2023-05-02', checkIn: '08:55', checkOut: '17:05' },
-  { id: 3, date: '2023-05-03', checkIn: '09:10', checkOut: '17:15' },
-  // Add more mock data as needed
-]
+import pb from '@/lib/pocketbase'
 
 export function EmployeeAttendanceComponent() {
   const [date, setDate] = useState<Date>()
-  const [filteredData, setFilteredData] = useState(attendanceData)
+  const [filteredData, setFilteredData] = useState([])
+
+  useEffect(() => {
+    async function fetchData() {
+      const attendanceRecords = await pb.collection('attendance').getFullList()
+      setFilteredData(attendanceRecords)
+    }
+
+    fetchData()
+  }, [])
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
     setDate(selectedDate)
     if (selectedDate) {
-      const filtered = attendanceData.filter(item => 
+      const filtered = filteredData.filter(item => 
         item.date === format(selectedDate, 'yyyy-MM-dd')
       )
       setFilteredData(filtered)
     } else {
-      setFilteredData(attendanceData)
+      fetchData()
     }
   }
 

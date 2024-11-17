@@ -4,18 +4,30 @@ import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import pb from '@/lib/pocketbase'
 
 export function RegistroEmpleados() {
   const [mensaje, setMensaje] = useState('')
   const [empleadoId, setEmpleadoId] = useState('')
 
-  const handleRegistro = (tipo: 'entrada' | 'salida') => {
+  const handleRegistro = async (tipo: 'entrada' | 'salida') => {
     if (!empleadoId) {
       setMensaje('Por favor, ingrese un ID de empleado.')
       return
     }
-    setMensaje(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} registrada exitosamente para el empleado ${empleadoId}.`)
-    setEmpleadoId('')
+
+    try {
+      const record = {
+        empleadoId,
+        tipo,
+        timestamp: new Date().toISOString()
+      }
+      await pb.collection('registros').create(record)
+      setMensaje(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} registrada exitosamente para el empleado ${empleadoId}.`)
+      setEmpleadoId('')
+    } catch (error) {
+      setMensaje('Error al registrar. Por favor, intente nuevamente.')
+    }
   }
 
   return (

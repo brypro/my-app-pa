@@ -1,26 +1,37 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Edit, Trash2, Search } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import pb from '@/lib/pocketbase'
 
 // Tipo para representar un empleado
 type Employee = {
-  id: number
+  id: string
   name: string
   position: string
   department: string
 }
 
 export function EditEmployeesComponent() {
-  const [employees, setEmployees] = useState<Employee[]>([
-    { id: 1, name: 'Juan Pérez', position: 'Desarrollador', department: 'TI' },
-    { id: 2, name: 'María García', position: 'Diseñadora', department: 'UX/UI' },
-    { id: 3, name: 'Carlos Rodríguez', position: 'Gerente de Proyecto', department: 'Gestión' },
-  ])
+  const [employees, setEmployees] = useState<Employee[]>([])
   const [searchTerm, setSearchTerm] = useState('')
+
+  useEffect(() => {
+    async function fetchEmployees() {
+      const records = await pb.collection('employees').getFullList()
+      setEmployees(records.map((record: any) => ({
+        id: record.id,
+        name: record.name,
+        position: record.position,
+        department: record.department
+      })))
+    }
+
+    fetchEmployees()
+  }, [])
 
   const filteredEmployees = employees.filter(employee =>
     employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -28,19 +39,23 @@ export function EditEmployeesComponent() {
     employee.department.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const handleAddEmployee = () => {
-    // Implementar lógica para agregar empleado
-    console.log('Agregar nuevo empleado')
+  const handleAddEmployee = async () => {
+    const newEmployee = { id: '', name: 'Nuevo Empleado', position: 'Posición', department: 'Departamento' }
+    const record = await pb.collection('employees').create(newEmployee)
+    setEmployees([...employees, { ...newEmployee, id: record.id }])
   }
 
-  const handleEditEmployee = (id: number) => {
-    // Implementar lógica para editar empleado
-    console.log('Editar empleado', id)
+  const handleEditEmployee = async (id: string) => {
+    const updatedEmployee = employees.find(employee => employee.id === id)
+    if (updatedEmployee) {
+      await pb.collection('employees').update(id, updatedEmployee)
+      setEmployees(employees.map(employee => employee.id === id ? updatedEmployee : employee))
+    }
   }
 
-  const handleDeleteEmployee = (id: number) => {
-    // Implementar lógica para eliminar empleado
-    console.log('Eliminar empleado', id)
+  const handleDeleteEmployee = async (id: string) => {
+    await pb.collection('employees').delete(id)
+    setEmployees(employees.filter(employee => employee.id !== id))
   }
 
   return (

@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -14,6 +14,7 @@ import {
 } from 'chart.js'
 import { Bar, Line } from 'react-chartjs-2'
 import { Button } from "@/components/ui/button"
+import pb from '@/lib/pocketbase'
 
 ChartJS.register(
   CategoryScale,
@@ -27,6 +28,21 @@ ChartJS.register(
 )
 
 export function AttendanceReportComponent() {
+  const [attendanceData, setAttendanceData] = useState([])
+  const [tardinessData, setTardinessData] = useState([])
+
+  useEffect(() => {
+    async function fetchData() {
+      const attendanceRecords = await pb.collection('attendance').getFullList()
+      const tardinessRecords = await pb.collection('tardiness').getFullList()
+
+      setAttendanceData(attendanceRecords.map(record => record.average))
+      setTardinessData(tardinessRecords.map(record => record.count))
+    }
+
+    fetchData()
+  }, [])
+
   const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
   
   const barData = {
@@ -34,7 +50,7 @@ export function AttendanceReportComponent() {
     datasets: [
       {
         label: 'Asistencia Promedio',
-        data: [65, 70, 80, 81, 76, 85, 87, 80, 74, 78, 82, 79],
+        data: attendanceData,
         backgroundColor: '#A3BE8C',
       },
     ],
@@ -45,7 +61,7 @@ export function AttendanceReportComponent() {
     datasets: [
       {
         label: 'Tardanzas',
-        data: [12, 19, 10, 5, 8, 3, 7, 15, 20, 18, 12, 9],
+        data: tardinessData,
         borderColor: '#5E81AC',
         tension: 0.1,
       },
