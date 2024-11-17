@@ -1,6 +1,8 @@
+'use client'
 import { EditEmployeesComponent } from "@/components/edit-employees";
 import { useState } from "react";
 import AddEmployeeModal from "@/components/add-employee-modal";
+
 
 export default function EmployeesPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
