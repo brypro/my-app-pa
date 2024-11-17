@@ -1,11 +1,12 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Trash2, Save, AlertTriangle } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import pb from '@/lib/pocketbase'
 
 type Record = {
   id: number
@@ -16,20 +17,31 @@ type Record = {
 }
 
 export function AdminPanel() {
-  const [records, setRecords] = useState<Record[]>([
-    { id: 1, employeeName: "John Doe", date: "2023-06-01", checkIn: "09:00", checkOut: "17:00" },
-    { id: 2, employeeName: "Jane Smith", date: "2023-06-01", checkIn: "08:30", checkOut: "16:30" },
-    { id: 3, employeeName: "Bob Johnson", date: "2023-06-01", checkIn: "09:15", checkOut: "17:15" },
-  ])
+  const [records, setRecords] = useState<Record[]>([])
   const [editingId, setEditingId] = useState<number | null>(null)
   const [validationError, setValidationError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchRecords() {
+      const records = await pb.collection('records').getFullList()
+      setRecords(records.map((record: any) => ({
+        id: record.id,
+        employeeName: record.employeeName,
+        date: record.date,
+        checkIn: record.checkIn,
+        checkOut: record.checkOut
+      })))
+    }
+
+    fetchRecords()
+  }, [])
 
   const handleEdit = (id: number) => {
     setEditingId(id)
     setValidationError(null)
   }
 
-  const handleSave = (id: number) => {
+  const handleSave = async (id: number) => {
     const record = records.find(r => r.id === id)
     if (record) {
       const checkInTime = new Date(`2000-01-01T${record.checkIn}`)
@@ -39,12 +51,15 @@ export function AdminPanel() {
         setValidationError("La hora de salida debe ser posterior a la hora de entrada.")
         return
       }
+
+      await pb.collection('records').update(id, record)
     }
     setEditingId(null)
     setValidationError(null)
   }
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
+    await pb.collection('records').delete(id)
     setRecords(records.filter(record => record.id !== id))
     setValidationError(null)
   }

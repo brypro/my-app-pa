@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Bar, Line } from 'react-chartjs-2'
 import { 
   Card, 
@@ -27,6 +27,8 @@ import {
   PointElement,
 } from 'chart.js'
 
+import pb from '@/lib/pocketbase'
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -39,11 +41,29 @@ ChartJS.register(
 )
 
 export function AdminDashboardComponent() {
-  const [activeEmployees, setActiveEmployees] = useState(250)
-  const [recentEntries, setRecentEntries] = useState(45)
-  const [recentExits, setRecentExits] = useState(38)
-  const [systemFailures, setSystemFailures] = useState(2)
-  const [pendingReports, setPendingReports] = useState(7)
+  const [activeEmployees, setActiveEmployees] = useState(0)
+  const [recentEntries, setRecentEntries] = useState(0)
+  const [recentExits, setRecentExits] = useState(0)
+  const [systemFailures, setSystemFailures] = useState(0)
+  const [pendingReports, setPendingReports] = useState(0)
+
+  useEffect(() => {
+    async function fetchData() {
+      const employees = await pb.collection('employees').getFullList()
+      const entries = await pb.collection('entries').getFullList()
+      const exits = await pb.collection('exits').getFullList()
+      const failures = await pb.collection('failures').getFullList()
+      const reports = await pb.collection('reports').getFullList()
+
+      setActiveEmployees(employees.length)
+      setRecentEntries(entries.length)
+      setRecentExits(exits.length)
+      setSystemFailures(failures.length)
+      setPendingReports(reports.length)
+    }
+
+    fetchData()
+  }, [])
 
   const attendanceData = {
     labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie'],
@@ -144,9 +164,6 @@ export function AdminDashboardComponent() {
         <Card>
           <CardHeader>
             <CardTitle>Productividad Semanal</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Line data={productivityData} />
           </CardContent>
         </Card>
       </div>

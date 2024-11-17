@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Bar } from 'react-chartjs-2'
 import { 
   Chart as ChartJS, 
@@ -11,6 +11,7 @@ import {
   Tooltip, 
   Legend 
 } from 'chart.js'
+import pb from '@/lib/pocketbase'
 
 ChartJS.register(
   CategoryScale,
@@ -25,26 +26,45 @@ export function AdminReportGeneratorComponent() {
   const [month, setMonth] = useState('')
   const [year, setYear] = useState('')
   const [showChart, setShowChart] = useState(false)
-
-  const generateReport = (e: React.FormEvent) => {
-    e.preventDefault()
-    setShowChart(true)
-  }
-
-  const chartData = {
+  const [chartData, setChartData] = useState({
     labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
     datasets: [
       {
         label: 'Asistencia',
-        data: [85, 90, 88, 92],
+        data: [0, 0, 0, 0],
         backgroundColor: '#A3BE8C',
       },
       {
         label: 'Ausencias',
-        data: [15, 10, 12, 8],
+        data: [0, 0, 0, 0],
         backgroundColor: '#5E81AC',
       },
     ],
+  })
+
+  const generateReport = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const reportData = await pb.collection('reports').getFullList({
+      filter: `month = ${month} && year = ${year}`
+    })
+    const attendanceData = reportData.map((data: any) => data.attendance)
+    const absenceData = reportData.map((data: any) => data.absence)
+    setChartData({
+      labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
+      datasets: [
+        {
+          label: 'Asistencia',
+          data: attendanceData,
+          backgroundColor: '#A3BE8C',
+        },
+        {
+          label: 'Ausencias',
+          data: absenceData,
+          backgroundColor: '#5E81AC',
+        },
+      ],
+    })
+    setShowChart(true)
   }
 
   const chartOptions = {
