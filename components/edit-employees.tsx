@@ -22,6 +22,8 @@ export function EditEmployeesComponent() {
   useEffect(() => {
     async function fetchEmployees() {
       const records = await pb.collection('employees').getFullList()
+      if (!records) return
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setEmployees(records.map((record: any) => ({
         id: record.id,
         name: record.name,

@@ -164,6 +164,9 @@ export function AdminDashboardComponent() {
         <Card>
           <CardHeader>
             <CardTitle>Productividad Semanal</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Line data={productivityData} />
           </CardContent>
         </Card>
       </div>
