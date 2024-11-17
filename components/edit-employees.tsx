@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Edit, Trash2, Search } from 'lucide-react'
+import { Plus, Edit, Trash2, Search } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import pb from '@/lib/pocketbase'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 
 // Tipo para representar un empleado
 type Employee = {
@@ -18,12 +19,12 @@ type Employee = {
 export function EditEmployeesComponent() {
   const [employees, setEmployees] = useState<Employee[]>([])
   const [searchTerm, setSearchTerm] = useState('')
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [newEmployee, setNewEmployee] = useState({ name: '', position: '', department: '' })
 
   useEffect(() => {
     async function fetchEmployees() {
       const records = await pb.collection('employees').getFullList()
-      if (!records) return
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setEmployees(records.map((record: any) => ({
         id: record.id,
         name: record.name,
@@ -40,6 +41,13 @@ export function EditEmployeesComponent() {
     employee.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
     employee.department.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  const handleAddEmployee = async () => {
+    const record = await pb.collection('employees').create(newEmployee)
+    setEmployees([...employees, { ...newEmployee, id: record.id }])
+    setIsModalOpen(false)
+    setNewEmployee({ name: '', position: '', department: '' })
+  }
 
   const handleEditEmployee = async (id: string) => {
     const updatedEmployee = employees.find(employee => employee.id === id)
@@ -58,6 +66,45 @@ export function EditEmployeesComponent() {
     <div className="min-h-screen p-8 text-gray-800" style={{ backgroundColor: '#F4F4F9' }}>
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Panel de Administración de Empleados</h1>
       <div className="mb-6 flex justify-between items-center">
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogTrigger asChild>
+            <Button 
+              onClick={() => setIsModalOpen(true)}
+              style={{ backgroundColor: '#81A1C1' }}
+              className="text-white hover:bg-opacity-90"
+            >
+              <Plus className="mr-2 h-4 w-4" /> Agregar Nuevo Empleado
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Agregar Nuevo Empleado</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <Input
+                type="text"
+                placeholder="Nombre"
+                value={newEmployee.name}
+                onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })}
+              />
+              <Input
+                type="text"
+                placeholder="Posición"
+                value={newEmployee.position}
+                onChange={(e) => setNewEmployee({ ...newEmployee, position: e.target.value })}
+              />
+              <Input
+                type="text"
+                placeholder="Departamento"
+                value={newEmployee.department}
+                onChange={(e) => setNewEmployee({ ...newEmployee, department: e.target.value })}
+              />
+              <Button onClick={handleAddEmployee} style={{ backgroundColor: '#81A1C1' }} className="text-white hover:bg-opacity-90">
+                Agregar
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <Input
