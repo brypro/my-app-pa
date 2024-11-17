@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -9,6 +9,8 @@ import pb from '@/lib/pocketbase'
 export function RegistroEmpleados() {
   const [mensaje, setMensaje] = useState('')
   const [empleadoId, setEmpleadoId] = useState('')
+  const [selectedEmployee, setSelectedEmployee] = useState(null)
+  const [employees, setEmployees] = useState([])
 
   const handleRegistro = async (tipo: 'entrada' | 'salida') => {
     if (!empleadoId) {
@@ -29,6 +31,24 @@ export function RegistroEmpleados() {
       setMensaje('Error al registrar. Por favor, intente nuevamente.')
     }
   }
+
+  const handleEmployeeClick = (employee) => {
+    setSelectedEmployee(employee)
+    setEmpleadoId(employee.id)
+  }
+
+  const fetchEmployees = async () => {
+    try {
+      const records = await pb.collection('employees').getFullList()
+      setEmployees(records)
+    } catch (error) {
+      console.error('Error fetching employees:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchEmployees()
+  }, [])
 
   return (
     <div className="min-h-screen flex items-center text-gray-800 justify-center bg-[#F4F4F9]">
@@ -70,6 +90,21 @@ export function RegistroEmpleados() {
             {mensaje}
           </div>
         )}
+
+        <div className="mt-8">
+          <h2 className="text-xl font-bold text-center text-gray-800">Lista de Empleados</h2>
+          <ul className="mt-4 space-y-2">
+            {employees.map((employee) => (
+              <li 
+                key={employee.id} 
+                className={`p-2 border rounded-md cursor-pointer ${selectedEmployee?.id === employee.id ? 'bg-[#81A1C1] text-white' : 'bg-white text-gray-800'}`}
+                onClick={() => handleEmployeeClick(employee)}
+              >
+                {employee.name}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   )
