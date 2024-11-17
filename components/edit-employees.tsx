@@ -21,6 +21,7 @@ export function EditEmployeesComponent() {
   const [employees, setEmployees] = useState<Employee[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalOpenE, setIsModalOpenE] = useState(false)
   const [newEmployee, setNewEmployee] = useState({ name: '', position: '', department: '' })
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
 
@@ -54,7 +55,7 @@ export function EditEmployeesComponent() {
 
   const handleEditEmployee = (employee: Employee) => {
     setSelectedEmployee(employee);
-    setIsModalOpen(true);
+    setIsModalOpenE(true);
   }
 
   const handleDeleteEmployee = async (id: string) => {
@@ -154,8 +155,8 @@ export function EditEmployeesComponent() {
       </Table>
       {selectedEmployee && (
         <EditEmployeeModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          isOpen={isModalOpenE}
+          onClose={() => setIsModalOpenE(false)}
           employee={selectedEmployee}
           setEmployees={setEmployees}
         />
