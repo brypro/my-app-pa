@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import pb from '@/lib/pocketbase'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import EditEmployeeModal from '@/components/edit-employee-modal';
 
 // Tipo para representar un empleado
 type Employee = {
@@ -21,6 +22,7 @@ export function EditEmployeesComponent() {
   const [searchTerm, setSearchTerm] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [newEmployee, setNewEmployee] = useState({ name: '', position: '', department: '' })
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
 
   useEffect(() => {
     async function fetchEmployees() {
@@ -50,12 +52,9 @@ export function EditEmployeesComponent() {
     setNewEmployee({ name: '', position: '', department: '' })
   }
 
-  const handleEditEmployee = async (id: string) => {
-    const updatedEmployee = employees.find(employee => employee.id === id)
-    if (updatedEmployee) {
-      await pb.collection('employees').update(id, updatedEmployee)
-      setEmployees(employees.map(employee => employee.id === id ? updatedEmployee : employee))
-    }
+  const handleEditEmployee = (employee: Employee) => {
+    setSelectedEmployee(employee);
+    setIsModalOpen(true);
   }
 
   const handleDeleteEmployee = async (id: string) => {
@@ -135,7 +134,7 @@ export function EditEmployeesComponent() {
               <TableCell>{employee.department}</TableCell>
               <TableCell>
                 <Button
-                  onClick={() => handleEditEmployee(employee.id)}
+                  onClick={() => handleEditEmployee(employee)}
                   style={{ backgroundColor: '#EBCB8B' }}
                   className="mr-2 text-white hover:bg-opacity-90"
                 >
@@ -153,6 +152,14 @@ export function EditEmployeesComponent() {
           ))}
         </TableBody>
       </Table>
+      {selectedEmployee && (
+        <EditEmployeeModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          employee={selectedEmployee}
+          setEmployees={setEmployees}
+        />
+      )}
     </div>
   )
 }
