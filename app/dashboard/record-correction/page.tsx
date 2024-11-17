@@ -1,10 +1,9 @@
-import { AdminPanel } from "@/components/admin-panel";
-
+import { RecordCorrectionComponent } from "@/components/record-correction";
 
 export default function RecordCorrectionPage() {
     return (
         <div>
-            <AdminPanel />
+            <RecordCorrectionComponent />
         </div>
     )
 }
