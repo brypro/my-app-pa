@@ -19,12 +19,29 @@ export function RegistroEmpleados() {
       setMensaje('Por favor, ingrese un ID de empleado.')
       return
     }
+
+    const employee = employees.find(emp => emp.id === empleadoId)
+    if (!employee) {
+      setMensaje('Empleado no encontrado.')
+      return
+    }
+
+    const currentTime = new Date()
+    const workSchedule = employee.workSchedule.split('-')
+    const startTime = new Date()
+    const endTime = new Date()
+    startTime.setHours(parseInt(workSchedule[0].split(':')[0]), parseInt(workSchedule[0].split(':')[1]))
+    endTime.setHours(parseInt(workSchedule[1].split(':')[0]), parseInt(workSchedule[1].split(':')[1]))
+
+    const isLate = currentTime > startTime
+
     if(p0 === 'in') {
       try {
         const record = {
           empleadoId,
           timestamp: new Date().toISOString().split('T')[0],
-          in: new Date().toISOString()
+          in: new Date().toISOString(),
+          isLate
         }
         await pb.collection('records').create(record)
         setMensaje(`Registro creado exitosamente para el empleado ${empleadoId}.`)

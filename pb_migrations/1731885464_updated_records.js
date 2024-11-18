@@ -10,6 +10,18 @@ migrate((db) => {
   // remove
   collection.schema.removeField("ejz3dzqi")
 
+  // add
+  collection.schema.addField(new SchemaField({
+    "system": false,
+    "id": "isLate",
+    "name": "isLate",
+    "type": "boolean",
+    "required": true,
+    "presentable": false,
+    "unique": false,
+    "options": {}
+  }))
+
   return dao.saveCollection(collection)
 }, (db) => {
   const dao = new Dao(db)
@@ -34,6 +46,9 @@ migrate((db) => {
       "pattern": ""
     }
   }))
+
+  // remove
+  collection.schema.removeField("isLate")
 
   return dao.saveCollection(collection)
 })

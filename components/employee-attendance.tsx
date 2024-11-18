@@ -9,7 +9,7 @@ import RecordEmployee from '../app/models/models';
 
 
 export function EmployeeAttendanceComponent() {
-  const [filteredData, setFilteredData] = useState<{ id: string, timestamp: string, in: string, out: string, employee: string }[]>([])
+  const [filteredData, setFilteredData] = useState<{ id: string, timestamp: string, in: string, out: string, employee: string, isLate: boolean }[]>([])
 
   useEffect(() => {
     async function fetchData() {
@@ -22,7 +22,8 @@ export function EmployeeAttendanceComponent() {
         timestamp: record.timestamp,
         in: record.in,
         out: record.out,
-        employee: employees.find(employee => employee.id == record.empleadoId)?.name || 'Desconocido'
+        employee: employees.find(employee => employee.id == record.empleadoId)?.name || 'Desconocido',
+        isLate: record.isLate
       }))
       setFilteredData(formattedRecords)
     }
@@ -59,6 +60,7 @@ export function EmployeeAttendanceComponent() {
                 <TableHead style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>Empleado</TableHead>
                 <TableHead style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>Entrada</TableHead>
                 <TableHead style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>Salida</TableHead>
+                <TableHead style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>Tardanza</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -68,6 +70,7 @@ export function EmployeeAttendanceComponent() {
                   <TableCell style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>{row.employee}</TableCell>
                   <TableCell style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>{row.in}</TableCell>
                   <TableCell style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>{row.out}</TableCell>
+                  <TableCell style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>{row.isLate ? 'Sí' : 'No'}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

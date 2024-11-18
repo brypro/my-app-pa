@@ -15,6 +15,8 @@ type Employee = {
   name: string
   position: string
   department: string
+  workSchedule: string
+  workDays: string[]
 }
 
 export function EditEmployeesComponent() {
@@ -22,7 +24,7 @@ export function EditEmployeesComponent() {
   const [searchTerm, setSearchTerm] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isModalOpenE, setIsModalOpenE] = useState(false)
-  const [newEmployee, setNewEmployee] = useState({ name: '', position: '', department: '' })
+  const [newEmployee, setNewEmployee] = useState({ name: '', position: '', department: '', workSchedule: '', workDays: [] })
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
 
   useEffect(() => {
@@ -33,7 +35,9 @@ export function EditEmployeesComponent() {
         id: record.id,
         name: record.name,
         position: record.position,
-        department: record.department
+        department: record.department,
+        workSchedule: record.workSchedule,
+        workDays: record.workDays
       })))
     }
 
@@ -50,7 +54,7 @@ export function EditEmployeesComponent() {
     const record = await pb.collection('employees').create(newEmployee)
     setEmployees([...employees, { ...newEmployee, id: record.id }])
     setIsModalOpen(false)
-    setNewEmployee({ name: '', position: '', department: '' })
+    setNewEmployee({ name: '', position: '', department: '', workSchedule: '', workDays: [] })
   }
 
   const handleEditEmployee = (employee: Employee) => {
@@ -100,6 +104,18 @@ export function EditEmployeesComponent() {
                 value={newEmployee.department}
                 onChange={(e) => setNewEmployee({ ...newEmployee, department: e.target.value })}
               />
+              <Input
+                type="text"
+                placeholder="Horario de Trabajo"
+                value={newEmployee.workSchedule}
+                onChange={(e) => setNewEmployee({ ...newEmployee, workSchedule: e.target.value })}
+              />
+              <Input
+                type="text"
+                placeholder="Días Laborales"
+                value={newEmployee.workDays.join(', ')}
+                onChange={(e) => setNewEmployee({ ...newEmployee, workDays: e.target.value.split(',').map(day => day.trim()) })}
+              />
               <Button onClick={handleAddEmployee} style={{ backgroundColor: '#81A1C1' }} className="text-white hover:bg-opacity-90">
                 Agregar
               </Button>
@@ -124,6 +140,8 @@ export function EditEmployeesComponent() {
             <TableHead>Nombre</TableHead>
             <TableHead>Posición</TableHead>
             <TableHead>Departamento</TableHead>
+            <TableHead>Horario de Trabajo</TableHead>
+            <TableHead>Días Laborales</TableHead>
             <TableHead>Acciones</TableHead>
           </TableRow>
         </TableHeader>
@@ -133,6 +151,8 @@ export function EditEmployeesComponent() {
               <TableCell>{employee.name}</TableCell>
               <TableCell>{employee.position}</TableCell>
               <TableCell>{employee.department}</TableCell>
+              <TableCell>{employee.workSchedule}</TableCell>
+              <TableCell>{employee.workDays.join(', ')}</TableCell>
               <TableCell>
                 <Button
                   onClick={() => handleEditEmployee(employee)}

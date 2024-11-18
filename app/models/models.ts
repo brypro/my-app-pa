@@ -3,6 +3,8 @@ export default interface Employee {
     name: string
     position: string
     department: string
+    workSchedule: string
+    workDays: string[]
 }
 
 export default interface RecordEmployee {
@@ -11,4 +13,5 @@ export default interface RecordEmployee {
     in: string
     out: string
     empleadoId: string
+    isLate: boolean
 }
