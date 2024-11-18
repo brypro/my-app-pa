@@ -9,6 +9,8 @@ const AddEmployeeModal = ({ isOpen, onClose }) => {
   const [name, setName] = useState('');
   const [position, setPosition] = useState('');
   const [department, setDepartment] = useState('');
+  const [workSchedule, setWorkSchedule] = useState('');
+  const [workDays, setWorkDays] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,6 +18,8 @@ const AddEmployeeModal = ({ isOpen, onClose }) => {
       name,
       position,
       department,
+      workSchedule,
+      workDays: workDays.split(',').map(day => day.trim()),
     };
     await pb.collection('employees').create(newEmployee);
     onClose();
@@ -60,6 +64,28 @@ const AddEmployeeModal = ({ isOpen, onClose }) => {
               id="department"
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="workSchedule" className="block text-sm font-medium text-gray-700">
+              Work Schedule
+            </label>
+            <Input
+              id="workSchedule"
+              value={workSchedule}
+              onChange={(e) => setWorkSchedule(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="workDays" className="block text-sm font-medium text-gray-700">
+              Work Days
+            </label>
+            <Input
+              id="workDays"
+              value={workDays}
+              onChange={(e) => setWorkDays(e.target.value)}
               required
             />
           </div>
