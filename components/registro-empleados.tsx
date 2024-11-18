@@ -14,23 +14,40 @@ export function RegistroEmpleados() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [employees, setEmployees] = useState<Record<string, any>[]>([])
 
-  const handleRegistro = async () => {
+  const handleRegistro = async (p0: string) => {
     if (!empleadoId) {
       setMensaje('Por favor, ingrese un ID de empleado.')
       return
     }
-
-    try {
-      const record = {
-        empleadoId,
-        timestamp: new Date().toISOString().split('T')[0]
+    if(p0 === 'in') {
+      try {
+        const record = {
+          empleadoId,
+          timestamp: new Date().toISOString().split('T')[0],
+          in: new Date().toISOString()
+        }
+        await pb.collection('records').create(record)
+        setMensaje(`Registro creado exitosamente para el empleado ${empleadoId}.`)
+        setEmpleadoId('')
+      } catch (error) {
+        setMensaje('Error al registrar. Por favor, intente nuevamente.' + error)
       }
-      await pb.collection('records').create(record)
-      setMensaje(`Registro creado exitosamente para el empleado ${empleadoId}.`)
-      setEmpleadoId('')
-    } catch (error) {
-      setMensaje('Error al registrar. Por favor, intente nuevamente.' + error)
+    }else{
+      try {
+        const records = await pb.collection('records').getList(1,1,{ empleadoId, timestamp: new Date().toISOString().split('T')[0] })
+        if (records.items.length === 0) {
+          setMensaje(`No se encontró un registro de entrada para el empleado ${empleadoId}.`)
+          return
+        }
+        records.items[0].out = new Date().toISOString()
+        await pb.collection('records').update(records.items[0].id, records.items[0])
+        setMensaje(`Registro de salida creado exitosamente para el empleado ${empleadoId}.`)
+        setEmpleadoId('')
+      } catch (error) {
+        setMensaje('Error al registrar. Por favor, intente nuevamente.' + error)
+      }
     }
+    
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -71,14 +88,14 @@ export function RegistroEmpleados() {
           
           <div className="grid grid-cols-2 gap-4">
             <Button 
-              onClick={handleRegistro}
+              onClick={async () => await handleRegistro('in')}
               className="w-full py-3 text-white bg-[#81A1C1] hover:bg-[#5E81AC] transition-colors duration-200"
               style={{boxShadow: '0 2px 4px rgba(46, 52, 64, 0.1)'}}
             >
               Registrar Entrada
             </Button>
             <Button 
-              onClick={handleRegistro}
+              onClick={async () => await handleRegistro('out')}
               className="w-full py-3 text-white bg-[#81A1C1] hover:bg-[#5E81AC] transition-colors duration-200"
               style={{boxShadow: '0 2px 4px rgba(46, 52, 64, 0.1)'}}
             >

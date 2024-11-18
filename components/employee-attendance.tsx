@@ -4,14 +4,27 @@ import { useState, useEffect } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import pb from '@/lib/pocketbase'
+import Employee from '@/app/models/models'
+import RecordEmployee from '../app/models/models';
+
 
 export function EmployeeAttendanceComponent() {
-  const [filteredData, setFilteredData] = useState([])
+  const [filteredData, setFilteredData] = useState<{ id: string, timestamp: string, in: string, out: string, employee: string }[]>([])
 
   useEffect(() => {
     async function fetchData() {
-      const attendanceRecords = await pb.collection('records').getFullList()
-      setFilteredData(attendanceRecords)
+      const attendanceRecords = await pb.collection('records').getFullList<RecordEmployee>()
+      const employees = await pb.collection('employees').getFullList<Employee>()
+      console.log(employees)
+      console.log(attendanceRecords)
+      const formattedRecords = attendanceRecords.map(record => ({
+        id: record.id,
+        timestamp: record.timestamp,
+        in: record.in,
+        out: record.out,
+        employee: employees.find(employee => employee.id == record.empleadoId)?.name || 'Desconocido'
+      }))
+      setFilteredData(formattedRecords)
     }
 
     fetchData()
@@ -43,6 +56,7 @@ export function EmployeeAttendanceComponent() {
             <TableHeader>
               <TableRow>
                 <TableHead style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>Fecha</TableHead>
+                <TableHead style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>Empleado</TableHead>
                 <TableHead style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>Entrada</TableHead>
                 <TableHead style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>Salida</TableHead>
               </TableRow>
@@ -51,8 +65,9 @@ export function EmployeeAttendanceComponent() {
               {filteredData.map((row) => (
                 <TableRow key={row.id}>
                   <TableCell style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>{row.timestamp}</TableCell>
-                  <TableCell style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>{row.checkIn}</TableCell>
-                  <TableCell style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>{row.checkOut}</TableCell>
+                  <TableCell style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>{row.employee}</TableCell>
+                  <TableCell style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>{row.in}</TableCell>
+                  <TableCell style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>{row.out}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

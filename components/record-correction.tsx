@@ -7,45 +7,52 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import pb from '@/lib/pocketbase'
+import RecordEmployee from '../app/models/models';
+import Employee from '../app/models/models'
 
-type Record = {
-  id: number
-  employeeName: string
-  date: string
-  checkIn: string
-  checkOut: string
-}
+// type Record = {
+//   id: string
+//   employeeName: string
+//   date: string
+//   checkIn: string
+//   checkOut: string
+// }
 
 export function RecordCorrectionComponent() {
-  const [records, setRecords] = useState<Record[]>([])
-  const [editingId, setEditingId] = useState<number | null>(null)
+  const [records, setRecords] = useState<RecordEmployee[]>([])
+  const [employees, setEmployees] = useState<Employee[]>([])
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [validationError, setValidationError] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchRecords() {
-      const records = await pb.collection('records').getFullList()
-      setRecords(records.map((record: any) => ({
-        id: record.id,
-        employeeName: record.employeeName,
-        date: record.date,
-        checkIn: record.checkIn,
-        checkOut: record.checkOut
-      })))
+      const records = await pb.collection('records').getFullList<RecordEmployee>()
+      const employees = await pb.collection('employees').getFullList<Employee>()
+      setRecords(records)
+      setEmployees(employees)
+      //   records.map((record: any) => ({
+      //   id: record.id,
+      //   employeeName: employees.find((employee: Employee) => employee.id === record.empleadoId)?.name || 'Desconocido',
+      //   date: record.timestamp,
+      //   employeeId: record.employeeId,
+      //   checkIn: record.in,
+      //   checkOut: record.out
+      // })))
     }
 
     fetchRecords()
   }, [])
 
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: string) => {
     setEditingId(id)
     setValidationError(null)
   }
 
-  const handleSave = async (id: number) => {
+  const handleSave = async (id: string) => {
     const record = records.find(r => r.id === id)
     if (record) {
-      const checkInTime = new Date(`2000-01-01T${record.checkIn}`)
-      const checkOutTime = new Date(`2000-01-01T${record.checkOut}`)
+      const checkInTime = new Date(`2000-01-01T${record.in}`)
+      const checkOutTime = new Date(`2000-01-01T${record.out}`)
       
       if (checkOutTime <= checkInTime) {
         setValidationError("La hora de salida debe ser posterior a la hora de entrada.")
@@ -58,13 +65,13 @@ export function RecordCorrectionComponent() {
     setValidationError(null)
   }
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     await pb.collection('records').delete(id)
     setRecords(records.filter(record => record.id !== id))
     setValidationError(null)
   }
 
-  const handleInputChange = (id: number, field: keyof Record, value: string) => {
+  const handleInputChange = (id: string, field: keyof RecordEmployee, value: string) => {
     setRecords(records.map(record => 
       record.id === id ? { ...record, [field]: value } : record
     ))
@@ -93,39 +100,28 @@ export function RecordCorrectionComponent() {
           {records.map(record => (
             <TableRow key={record.id}>
               <TableCell>
-                {editingId === record.id ? (
-                  <Input 
-                    value={record.employeeName} 
-                    onChange={(e) => handleInputChange(record.id, 'employeeName', e.target.value)}
-                  />
-                ) : record.employeeName}
+                {employees.find(employee => employee.id === record.empleadoId)?.name || 'Desconocido'}
               </TableCell>
               <TableCell>
-                {editingId === record.id ? (
-                  <Input 
-                    type="date" 
-                    value={record.date} 
-                    onChange={(e) => handleInputChange(record.id, 'date', e.target.value)}
-                  />
-                ) : record.date}
+                { record.timestamp}
               </TableCell>
               <TableCell>
                 {editingId === record.id ? (
                   <Input 
                     type="time" 
-                    value={record.checkIn} 
-                    onChange={(e) => handleInputChange(record.id, 'checkIn', e.target.value)}
+                    value={record.in} 
+                    onChange={(e) => handleInputChange(record.id, 'in', e.target.value)}
                   />
-                ) : record.checkIn}
+                ) : record.in}
               </TableCell>
               <TableCell>
                 {editingId === record.id ? (
                   <Input 
                     type="time" 
-                    value={record.checkOut} 
-                    onChange={(e) => handleInputChange(record.id, 'checkOut', e.target.value)}
+                    value={record.out} 
+                    onChange={(e) => handleInputChange(record.id, 'out', e.target.value)}
                   />
-                ) : record.checkOut}
+                ) : record.out}
               </TableCell>
               <TableCell>
                 {editingId === record.id ? (
