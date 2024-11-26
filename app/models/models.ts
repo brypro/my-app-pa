@@ -11,4 +11,6 @@ export default interface RecordEmployee {
     in: string
     out: string
     empleadoId: string
+    month: number
+    year: number
 }

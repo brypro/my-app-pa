@@ -14,7 +14,7 @@ export function MonthlyReportComponent() {
   const generateReport = async (e: React.FormEvent) => {
     e.preventDefault()
     const report = await pb.collection('records').getFullList(100,{
-      filter: `timestampt = ${month} && year = ${year}`
+      filter: `timestamp >= '${year}-${month}-01' && timestamp <= '${year}-${month}-31'`
     })
     setReportData(report)
   }
@@ -66,17 +66,19 @@ export function MonthlyReportComponent() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>Semana</TableHead>
-                    <TableHead style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>Asistencia</TableHead>
-                    <TableHead style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>Ausencias</TableHead>
+                    <TableHead style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>Fecha</TableHead>
+                    <TableHead style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>Empleado</TableHead>
+                    <TableHead style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>Entrada</TableHead>
+                    <TableHead style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>Salida</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {reportData.map((row, index) => (
                     <TableRow key={index}>
-                      <TableCell style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>{row.week}</TableCell>
-                      <TableCell style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>{row.attendance}</TableCell>
-                      <TableCell style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>{row.absence}</TableCell>
+                      <TableCell style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>{row.timestamp}</TableCell>
+                      <TableCell style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>{row.empleadoId}</TableCell>
+                      <TableCell style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>{row.in}</TableCell>
+                      <TableCell style={{ color: '#2E3440', borderColor: '#ECEFF4' }}>{row.out}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

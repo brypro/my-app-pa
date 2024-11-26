@@ -50,6 +50,32 @@ migrate((db) => {
           "min": "",
           "max": ""
         }
+      },
+      {
+        "system": false,
+        "id": "month",
+        "name": "month",
+        "type": "number",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "min": 1,
+          "max": 12
+        }
+      },
+      {
+        "system": false,
+        "id": "year",
+        "name": "year",
+        "type": "number",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "min": 1900,
+          "max": 2100
+        }
       }
     ],
     "indexes": [],
