@@ -41,30 +41,42 @@ export function AdminReportGeneratorComponent() {
       },
     ],
   })
+  const [error, setError] = useState('')
 
   const generateReport = async (e: React.FormEvent) => {
     e.preventDefault()
-    const reportData = await pb.collection('reports').getFullList({
-      filter: `month = ${month} && year = ${year}`
-    })
-    const attendanceData = reportData.map((data: any) => data.attendance)
-    const absenceData = reportData.map((data: any) => data.absence)
-    setChartData({
-      labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
-      datasets: [
-        {
-          label: 'Asistencia',
-          data: attendanceData,
-          backgroundColor: '#A3BE8C',
-        },
-        {
-          label: 'Ausencias',
-          data: absenceData,
-          backgroundColor: '#5E81AC',
-        },
-      ],
-    })
-    setShowChart(true)
+    try {
+      const reportData = await pb.collection('reports').getFullList({
+        filter: `month = ${month} && year = ${year}`
+      })
+      if (!reportData || reportData.length === 0) {
+        setError('No se encontraron datos para el mes y año seleccionados.')
+        setShowChart(false)
+        return
+      }
+      const attendanceData = reportData.map((data: any) => data.attendance)
+      const absenceData = reportData.map((data: any) => data.absence)
+      setChartData({
+        labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
+        datasets: [
+          {
+            label: 'Asistencia',
+            data: attendanceData,
+            backgroundColor: '#A3BE8C',
+          },
+          {
+            label: 'Ausencias',
+            data: absenceData,
+            backgroundColor: '#5E81AC',
+          },
+        ],
+      })
+      setShowChart(true)
+      setError('')
+    } catch (error) {
+      setError('Error al generar el reporte. Por favor, inténtelo de nuevo.')
+      setShowChart(false)
+    }
   }
 
   const chartOptions = {
@@ -129,6 +141,11 @@ export function AdminReportGeneratorComponent() {
             Generar Reporte
           </button>
         </form>
+        {error && (
+          <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-4">
+            {error}
+          </div>
+        )}
         {showChart && (
           <div className="bg-white p-4 rounded-lg shadow">
             <h2 className="text-xl font-semibold mb-4">
