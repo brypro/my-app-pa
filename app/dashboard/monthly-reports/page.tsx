@@ -1,9 +1,9 @@
-import { AdminReportGeneratorComponent } from "@/components/admin-report-generator";
+import { MonthlyReportComponent } from "@/components/monthly-report";
 
 export default function MonthlyReportsPage() {
     return (
         <div>
-            <AdminReportGeneratorComponent />
+            <MonthlyReportComponent />
         </div>
     )
 }
