@@ -112,7 +112,15 @@ export function AdminReportGeneratorComponent() {
                 <option value="01">Enero</option>
                 <option value="02">Febrero</option>
                 <option value="03">Marzo</option>
-                {/* Agregar los demás meses */}
+                <option value="04">Abril</option>
+                <option value="05">Mayo</option>
+                <option value="06">Junio</option>
+                <option value="07">Julio</option>
+                <option value="08">Agosto</option>
+                <option value="09">Septiembre</option>
+                <option value="10">Octubre</option>
+                <option value="11">Noviembre</option>
+                <option value="12">Diciembre</option>
               </select>
             </div>
             <div className="w-full md:w-1/2 px-2">
@@ -130,7 +138,9 @@ export function AdminReportGeneratorComponent() {
                 <option value="2023">2023</option>
                 <option value="2022">2022</option>
                 <option value="2021">2021</option>
-                {/* Agregar más años si es necesario */}
+                <option value="2020">2020</option>
+                <option value="2019">2019</option>
+                <option value="2018">2018</option>
               </select>
             </div>
           </div>
