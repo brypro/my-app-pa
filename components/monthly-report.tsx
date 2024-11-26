@@ -9,12 +9,12 @@ import pb from '@/lib/pocketbase'
 export function MonthlyReportComponent() {
   const [month, setMonth] = useState('')
   const [year, setYear] = useState('')
-  const [reportData, setReportData] = useState([])
+  const [reportData, setReportData] = useState<Record<string, any>[]>([])
 
   const generateReport = async (e: React.FormEvent) => {
     e.preventDefault()
-    const report = await pb.collection('reports').getFullList({
-      filter: `month = ${month} && year = ${year}`
+    const report = await pb.collection('records').getFullList(100,{
+      filter: `timestampt = ${month} && year = ${year}`
     })
     setReportData(report)
   }
