@@ -1,3 +1,4 @@
+'use client';
 import { LoginScreenComponent } from "@/components/login-screen";
 import pb from "@/lib/pocketbase";
 import { useRouter } from "next/navigation";
