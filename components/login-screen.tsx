@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import pb from '@/lib/pocketbase';
 
 export function LoginScreenComponent() {
   const router = useRouter();
@@ -12,7 +13,7 @@ export function LoginScreenComponent() {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({ username: '', password: '' });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validación simple de entrada
@@ -24,7 +25,12 @@ export function LoginScreenComponent() {
 
     // Verifica si no hay errores antes de redirigir
     if (!newErrors.username && !newErrors.password) {
-      router.push('/dashboard');
+      try {
+        await pb.collection('users').authWithPassword(username, password);
+        router.push('/dashboard');
+      } catch (error) {
+        setErrors({ ...newErrors, password: 'Autenticación fallida. Por favor, verifica tus credenciales.' });
+      }
     }
   };
 
