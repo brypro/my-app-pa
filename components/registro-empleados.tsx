@@ -24,7 +24,8 @@ export function RegistroEmpleados() {
         const record = {
           empleadoId,
           timestamp: new Date().toISOString().split('T')[0],
-          in: new Date().toISOString()
+          in: new Date().toISOString(),
+          out: ''
         }
         await pb.collection('records').create(record)
         setMensaje(`Registro creado exitosamente para el empleado ${empleadoId}.`)
@@ -34,7 +35,10 @@ export function RegistroEmpleados() {
       }
     }else{
       try {
-        const records = await pb.collection('records').getList(1,1,{ empleadoId, timestamp: new Date().toISOString().split('T')[0] })
+        const records = await pb.collection('records').getList(1, 10, {
+          filter: `empleadoId="${empleadoId}" && timestamp="${new Date().toISOString().split('T')[0]}"`
+        })
+        console.log(records)
         if (records.items.length === 0) {
           setMensaje(`No se encontró un registro de entrada para el empleado ${empleadoId}.`)
           return
@@ -42,6 +46,7 @@ export function RegistroEmpleados() {
         records.items[0].out = new Date().toISOString()
         await pb.collection('records').update(records.items[0].id, records.items[0])
         setMensaje(`Registro de salida creado exitosamente para el empleado ${empleadoId}.`)
+        setMensaje(records.items[0].id)
         setEmpleadoId('')
       } catch (error) {
         setMensaje('Error al registrar. Por favor, intente nuevamente.' + error)
