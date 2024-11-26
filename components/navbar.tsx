@@ -12,8 +12,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import pb from "@/lib/pocketbase"
+import { useRouter } from "next/navigation"
 
 export function NavbarComponent() {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    pb.authStore.clear();
+    router.push("/");
+  };
+
   return (
     <nav className="bg-[#F4F4F9] border-b border-[#ECEFF4] p-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -43,8 +52,8 @@ export function NavbarComponent() {
               <DropdownMenuItem>
                 <Link href="/" className="text-[#2E3440]">Configuración</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="/" className="text-[#2E3440]">Cerrar Sesión</Link>
+              <DropdownMenuItem onClick={handleLogout}>
+                <span className="text-[#2E3440]">Cerrar Sesión</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -71,7 +80,7 @@ export function NavbarComponent() {
                 <User className="h-5 w-5 mr-2 text-[#5E81AC]" />
                 Perfil
               </Link>
-              <Link href="/" className="flex items-center text-[#2E3440]">
+              <Link href="/" className="flex items-center text-[#2E3440]" onClick={handleLogout}>
                 Cerrar Sesión
               </Link>
             </nav>
