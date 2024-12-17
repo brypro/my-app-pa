@@ -1,20 +1,26 @@
 import { NextResponse } from 'next/server';
-import pb from '@/lib/pocketbase';
+import PocketBase from 'pocketbase';
+
+const pb = new PocketBase('http://127.0.0.1:8090');
+
+// you can also fetch all records at once via getFullList
+//const records = await pb.collection('employees').getFullList();
+//console.log('📋 Empleados:', records);
 
 async function findEmployeeByNfcUID(nfcUID) {
-  await pb.collection('employees').authWithPassword('email', 'password');
-  const employees = await pb.collection('employees').getFullList({
-    filter: `nfcUID="${nfcUID}"`
-  });
-  return employees.length > 0 ? employees[0] : null;
+  console.log('🔍 Buscando empleado con UID:', nfcUID);
+  const employees = await pb.collection('employees').getFirstListItem(`nfcUID="${nfcUID}"`);
+  console.log('🔍 Empleado encontrado:', employees)
+  return employees || null;
 }
 
 async function findTodaysRecords(employeeId) {
-  await pb.collection('records').authWithPassword('email', 'password');
   const currentDate = new Date().toISOString().split('T')[0];
-  const records = await pb.collection('records').getFullList({
-    filter: `empleadoId="${employeeId}" && timestamp="${currentDate}"`
+  console.log('🔍 Buscando registros de hoy para el empleado:', employeeId, currentDate);
+  const records = await pb.collection('records').getFullList(2,{
+    filter: `empleadoId="${employeeId}" && timestamp="${currentDate}"`,
   });
+  console.log('🔍 Registros de hoy:', records )
   return records;
 }
 
@@ -35,20 +41,21 @@ export async function POST(req) {
       lastRecord.out = new Date().toISOString();
       await pb.collection('records').update(lastRecord.id, lastRecord);
       console.log('✅ Registro de salida actualizado:', lastRecord);
-      globalNotification(`Salida registrada para el empleado con UID: ${nfcUID}`);
-      return NextResponse.json({ message: 'Salida registrada', record: lastRecord }, { status: 200 });
+      globalNotification(`Salida registrada para el empleado: ${employee.name}`);
+      return NextResponse.json({ message: `${employee.name}: Salida registrada`, record: lastRecord }, { status: 200 });
     } else {
+      const currentDate = new Date().toISOString().split('T')[0];
       const newRecord = {
         empleadoId: employee.id,
-        timestamp: new Date().toISOString(),
+        timestamp: currentDate,
         in: new Date().toISOString(),
         out: ''
       };
 
       await pb.collection('records').create(newRecord);
       console.log('✅ Registro de entrada agregado:', newRecord);
-      globalNotification(`Entrada registrada para el empleado con UID: ${nfcUID}`);
-      return NextResponse.json({ message: 'Entrada registrada', record: newRecord }, { status: 200 });
+      globalNotification(`Entrada registrada para el empleado empleado: ${employee.name}`);
+      return NextResponse.json({ message: `${employee.name}: Entrada registrada`, record: newRecord }, { status: 200 });
     }
   } catch (error) {
     console.error('❌ Error en la API:', error.message);
@@ -57,7 +64,6 @@ export async function POST(req) {
 }
 
 export async function GET() {
-  await pb.collection('records').authWithPassword('email', 'password');
   const records = await pb.collection('records').getFullList();
   return NextResponse.json({ attendanceLog: records });
 }
