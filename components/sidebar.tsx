@@ -8,9 +8,9 @@ import {
   Clock, 
   LogIn, 
   Edit, 
-  Activity, 
-  AlertTriangle, 
-  FileText, 
+  //Activity, 
+  //AlertTriangle, 
+  //FileText, 
   HelpCircle,
   ChevronLeft,
   ChevronRight
@@ -24,9 +24,9 @@ const menuItems = [
   { icon: Clock, label: 'Historial de Asistencia', href: '/dashboard/attendance-history' },
   { icon: LogIn, label: 'Registro de Entrada/Salida', href: '/dashboard/check-in-out' },
   { icon: Edit, label: 'Corrección de Registros', href: '/dashboard/record-correction' },
-  { icon: Activity, label: 'Estado del Sistema', href: '/dashboard/system-status' },
-  { icon: AlertTriangle, label: 'Notificación de Fallos', href: '/dashboard/fault-notifications' },
-  { icon: FileText, label: 'Generar Reportes Mensuales', href: '/dashboard/monthly-reports' },
+  //{ icon: Activity, label: 'Estado del Sistema', href: '/dashboard/system-status' },
+  //{ icon: AlertTriangle, label: 'Notificación de Fallos', href: '/dashboard/fault-notifications' },
+  //{ icon: FileText, label: 'Generar Reportes Mensuales', href: '/dashboard/monthly-reports' },
   { icon: HelpCircle, label: 'Ayuda', href: '/dashboard/help' },
 ]
 

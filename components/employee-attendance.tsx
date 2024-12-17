@@ -43,9 +43,6 @@ export function EmployeeAttendanceComponent() {
           
           <div className="flex justify-between items-center mb-4">
             <div className="space-x-2">
-              <Button onClick={() => handleExport('pdf')} style={{ backgroundColor: '#81A1C1', color: 'white' }}>
-                Exportar PDF
-              </Button>
               <Button onClick={() => handleExport('excel')} style={{ backgroundColor: '#81A1C1', color: 'white' }}>
                 Exportar Excel
               </Button>
