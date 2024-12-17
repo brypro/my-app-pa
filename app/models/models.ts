@@ -3,6 +3,7 @@ export default interface Employee {
     name: string
     position: string
     department: string
+    nfcUID: string
 }
 
 export default interface RecordEmployee {
@@ -13,4 +14,5 @@ export default interface RecordEmployee {
     empleadoId: string
     month: number
     year: number
+    nfcUID: string
 }
