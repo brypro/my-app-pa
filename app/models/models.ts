@@ -3,6 +3,7 @@ export default interface Employee {
     name: string
     position: string
     department: string
+    ufc: string
 }
 
 export default interface RecordEmployee {
