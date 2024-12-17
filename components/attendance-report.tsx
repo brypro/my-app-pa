@@ -28,45 +28,68 @@ ChartJS.register(
 )
 
 export function AttendanceReportComponent() {
-  const [attendanceData, setAttendanceData] = useState([])
-  const [tardinessData, setTardinessData] = useState([])
+  const [attendanceData, setAttendanceData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'Asistencia Promedio',
+        data: [],
+        backgroundColor: '#A3BE8C',
+      },
+    ],
+  })
+  const [tardinessData, setTardinessData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'Tardanzas',
+        data: [],
+        borderColor: '#5E81AC',
+        tension: 0.1,
+      },
+    ],
+  })
 
   useEffect(() => {
     async function fetchData() {
       const attendanceRecords = await pb.collection('attendance').getFullList()
       const tardinessRecords = await pb.collection('tardiness').getFullList()
 
-      setAttendanceData(attendanceRecords.map(record => record.average))
-      setTardinessData(tardinessRecords.map(record => record.count))
+      const last7Days = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date()
+        date.setDate(date.getDate() - i)
+        return date.toISOString().split('T')[0]
+      }).reverse()
+
+      const attendanceData = last7Days.map(date => attendanceRecords.filter(record => record.date === date).reduce((sum, record) => sum + record.average, 0) / attendanceRecords.filter(record => record.date === date).length || 0)
+      const tardinessData = last7Days.map(date => tardinessRecords.filter(record => record.date === date).reduce((sum, record) => sum + record.count, 0))
+
+      setAttendanceData({
+        labels: last7Days,
+        datasets: [
+          {
+            label: 'Asistencia Promedio',
+            data: attendanceData,
+            backgroundColor: '#A3BE8C',
+          },
+        ],
+      })
+
+      setTardinessData({
+        labels: last7Days,
+        datasets: [
+          {
+            label: 'Tardanzas',
+            data: tardinessData,
+            borderColor: '#5E81AC',
+            tension: 0.1,
+          },
+        ],
+      })
     }
 
     fetchData()
   }, [])
-
-  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
-  
-  const barData = {
-    labels: months,
-    datasets: [
-      {
-        label: 'Asistencia Promedio',
-        data: attendanceData,
-        backgroundColor: '#A3BE8C',
-      },
-    ],
-  }
-
-  const lineData = {
-    labels: months,
-    datasets: [
-      {
-        label: 'Tardanzas',
-        data: tardinessData,
-        borderColor: '#5E81AC',
-        tension: 0.1,
-      },
-    ],
-  }
 
   const chartOptions = {
     responsive: true,
@@ -76,7 +99,7 @@ export function AttendanceReportComponent() {
       },
       title: {
         display: true,
-        text: 'Reporte de Asistencia Anual',
+        text: 'Reporte de Asistencia Semanal',
       },
     },
     scales: {
@@ -96,10 +119,10 @@ export function AttendanceReportComponent() {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <Bar data={barData} options={chartOptions} />
+          <Bar data={attendanceData} options={chartOptions} />
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <Line data={lineData} options={chartOptions} />
+          <Line data={tardinessData} options={chartOptions} />
         </div>
       </div>
       
