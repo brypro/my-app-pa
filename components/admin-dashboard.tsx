@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Bar, Line } from 'react-chartjs-2'
+import { Bar, } from 'react-chartjs-2'
 import { 
   Card, 
   CardContent, 
@@ -11,8 +11,6 @@ import {
 import { 
   Users, 
   Clock, 
-  AlertTriangle,
-  FileText
 } from 'lucide-react'
 
 import {
@@ -44,9 +42,10 @@ export function AdminDashboardComponent() {
   const [activeEmployees, setActiveEmployees] = useState(0)
   const [recentEntries, setRecentEntries] = useState(0)
   const [recentExits, setRecentExits] = useState(0)
-  const [systemFailures, setSystemFailures] = useState(0)
-  const [pendingReports, setPendingReports] = useState(0)
-  const [attendanceData, setAttendanceData] = useState({
+  const [attendanceData, setAttendanceData] = useState<{
+    labels: string[],
+    datasets: { label: string, data: number[], backgroundColor: string }[]
+  }>({
     labels: [],
     datasets: [
       {
@@ -61,30 +60,17 @@ export function AdminDashboardComponent() {
       },
     ],
   })
-  const [productivityData, setProductivityData] = useState({
-    labels: [],
-    datasets: [
-      {
-        label: 'Productividad',
-        data: [],
-        borderColor: '#5E81AC',
-        tension: 0.1,
-      },
-    ],
-  })
+
 
   useEffect(() => {
     async function fetchData() {
       const employees = await pb.collection('employees').getFullList()
       const records = await pb.collection('records').getFullList()
-      const failures = await pb.collection('failures').getFullList()
-      const reports = await pb.collection('reports').getFullList()
+      
 
       setActiveEmployees(employees.length)
-      setRecentEntries(records.filter(record => record.checkIn).length)
-      setRecentExits(records.filter(record => record.checkOut).length)
-      setSystemFailures(failures.length)
-      setPendingReports(reports.length)
+      setRecentEntries(records.length)
+      setRecentExits(records.filter(record => record.out).length)
 
       const last7Days = Array.from({ length: 7 }, (_, i) => {
         const date = new Date()
@@ -92,13 +78,9 @@ export function AdminDashboardComponent() {
         return date.toISOString().split('T')[0]
       }).reverse()
 
-      const attendanceEntries = last7Days.map(date => records.filter(record => record.checkIn && record.timestamp.startsWith(date)).length)
-      const attendanceExits = last7Days.map(date => records.filter(record => record.checkOut && record.timestamp.startsWith(date)).length)
-      const productivity = last7Days.map(date => {
-        const dayRecords = records.filter(record => record.timestamp.startsWith(date))
-        const totalHours = dayRecords.reduce((sum, record) => sum + (new Date(record.checkOut) - new Date(record.checkIn)) / (1000 * 60 * 60), 0)
-        return totalHours / dayRecords.length || 0
-      })
+      const attendanceEntries = last7Days.map(date => records.filter(record => record.in && record.timestamp.startsWith(date)).length)
+      const attendanceExits = last7Days.map(date => records.filter(record => record.out && record.timestamp.startsWith(date)).length)
+      
 
       setAttendanceData({
         labels: last7Days,
@@ -116,17 +98,6 @@ export function AdminDashboardComponent() {
         ],
       })
 
-      setProductivityData({
-        labels: last7Days,
-        datasets: [
-          {
-            label: 'Productividad',
-            data: productivity,
-            borderColor: '#5E81AC',
-            tension: 0.1,
-          },
-        ],
-      })
     }
 
     fetchData()
@@ -150,7 +121,7 @@ export function AdminDashboardComponent() {
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Entradas Recientes</CardTitle>
+            <CardTitle className="text-sm font-medium">Entradas Contabilizadas</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -160,31 +131,11 @@ export function AdminDashboardComponent() {
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Salidas Recientes</CardTitle>
+            <CardTitle className="text-sm font-medium">Salidas Contabilizadas</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{recentExits}</div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Fallos del Sistema</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{systemFailures}</div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Reportes Pendientes</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{pendingReports}</div>
           </CardContent>
         </Card>
       </div>
@@ -197,15 +148,6 @@ export function AdminDashboardComponent() {
           </CardHeader>
           <CardContent>
             <Bar data={attendanceData} />
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Productividad Semanal</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Line data={productivityData} />
           </CardContent>
         </Card>
       </div>
