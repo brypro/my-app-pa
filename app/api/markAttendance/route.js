@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import pb from '@/lib/pocketbase';
 
 async function findEmployeeByNfcUID(nfcUID) {
+  await pb.collection('employees').authWithPassword('email', 'password');
   const employees = await pb.collection('employees').getFullList({
     filter: `nfcUID="${nfcUID}"`
   });
@@ -9,6 +10,7 @@ async function findEmployeeByNfcUID(nfcUID) {
 }
 
 async function findTodaysRecords(employeeId) {
+  await pb.collection('records').authWithPassword('email', 'password');
   const currentDate = new Date().toISOString().split('T')[0];
   const records = await pb.collection('records').getFullList({
     filter: `empleadoId="${employeeId}" && timestamp="${currentDate}"`
@@ -55,6 +57,7 @@ export async function POST(req) {
 }
 
 export async function GET() {
+  await pb.collection('records').authWithPassword('email', 'password');
   const records = await pb.collection('records').getFullList();
   return NextResponse.json({ attendanceLog: records });
 }
