@@ -9,9 +9,15 @@ const pb = new PocketBase('http://127.0.0.1:8090');
 
 async function findEmployeeByNfcUID(nfcUID) {
   console.log('🔍 Buscando empleado con UID:', nfcUID);
-  const employees = await pb.collection('employees').getFirstListItem(`nfcUID="${nfcUID}"`);
-  console.log('🔍 Empleado encontrado:', employees)
-  return employees || null;
+  try {
+    const employees = await pb.collection('employees').getFirstListItem(`nfcUID="${nfcUID}"`);
+    console.log('🔍 Empleado encontrado:', employees)
+    return employees || null;
+  }
+  catch (error) {
+    console.error('❌ Error al buscar empleado:', error.message);
+    return null;
+  }
 }
 
 async function findTodaysRecords(employeeId) {
@@ -31,6 +37,7 @@ export async function POST(req) {
 
     const employee = await findEmployeeByNfcUID(nfcUID);
     if (!employee) {
+      console.log('❌ Empleado no encontrado con UID:', nfcUID);
       return NextResponse.json({ error: 'Empleado no encontrado' }, { status: 404 });
     }
 
