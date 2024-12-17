@@ -46,6 +46,32 @@ export function AdminDashboardComponent() {
   const [recentExits, setRecentExits] = useState(0)
   const [systemFailures, setSystemFailures] = useState(0)
   const [pendingReports, setPendingReports] = useState(0)
+  const [attendanceData, setAttendanceData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'Entradas',
+        data: [],
+        backgroundColor: '#5E81AC',
+      },
+      {
+        label: 'Salidas',
+        data: [],
+        backgroundColor: '#A3BE8C',
+      },
+    ],
+  })
+  const [productivityData, setProductivityData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: 'Productividad',
+        data: [],
+        borderColor: '#5E81AC',
+        tension: 0.1,
+      },
+    ],
+  })
 
   useEffect(() => {
     async function fetchData() {
@@ -59,38 +85,52 @@ export function AdminDashboardComponent() {
       setRecentExits(records.filter(record => record.checkOut).length)
       setSystemFailures(failures.length)
       setPendingReports(reports.length)
+
+      const last7Days = Array.from({ length: 7 }, (_, i) => {
+        const date = new Date()
+        date.setDate(date.getDate() - i)
+        return date.toISOString().split('T')[0]
+      }).reverse()
+
+      const attendanceEntries = last7Days.map(date => records.filter(record => record.checkIn && record.timestamp.startsWith(date)).length)
+      const attendanceExits = last7Days.map(date => records.filter(record => record.checkOut && record.timestamp.startsWith(date)).length)
+      const productivity = last7Days.map(date => {
+        const dayRecords = records.filter(record => record.timestamp.startsWith(date))
+        const totalHours = dayRecords.reduce((sum, record) => sum + (new Date(record.checkOut) - new Date(record.checkIn)) / (1000 * 60 * 60), 0)
+        return totalHours / dayRecords.length || 0
+      })
+
+      setAttendanceData({
+        labels: last7Days,
+        datasets: [
+          {
+            label: 'Entradas',
+            data: attendanceEntries,
+            backgroundColor: '#5E81AC',
+          },
+          {
+            label: 'Salidas',
+            data: attendanceExits,
+            backgroundColor: '#A3BE8C',
+          },
+        ],
+      })
+
+      setProductivityData({
+        labels: last7Days,
+        datasets: [
+          {
+            label: 'Productividad',
+            data: productivity,
+            borderColor: '#5E81AC',
+            tension: 0.1,
+          },
+        ],
+      })
     }
 
     fetchData()
   }, [])
-
-  const attendanceData = {
-    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie'],
-    datasets: [
-      {
-        label: 'Entradas',
-        data: [220, 235, 228, 242, 240],
-        backgroundColor: '#5E81AC',
-      },
-      {
-        label: 'Salidas',
-        data: [218, 232, 225, 239, 238],
-        backgroundColor: '#A3BE8C',
-      },
-    ],
-  }
-
-  const productivityData = {
-    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie'],
-    datasets: [
-      {
-        label: 'Productividad',
-        data: [75, 82, 78, 85, 80],
-        borderColor: '#5E81AC',
-        tension: 0.1,
-      },
-    ],
-  }
 
   return (
     <div className="h-full w-full bg-gray-100 p-8">
