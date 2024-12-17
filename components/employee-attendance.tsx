@@ -5,11 +5,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import pb from '@/lib/pocketbase'
 import Employee from '@/app/models/models'
-import RecordEmployee from '../app/models/models';
-
+import RecordEmployee from '../app/models/models'
+import { useCSVDownloader } from 'react-papaparse'
 
 export function EmployeeAttendanceComponent() {
   const [filteredData, setFilteredData] = useState<{ id: string, timestamp: string, in: string, out: string, employee: string }[]>([])
+  const { CSVDownloader, Type } = useCSVDownloader()
 
   useEffect(() => {
     async function fetchData() {
@@ -30,9 +31,13 @@ export function EmployeeAttendanceComponent() {
     fetchData()
   }, [])
 
-  const handleExport = (format: 'pdf' | 'excel') => {
-    // Implement export functionality here
-    console.log(`Exporting to ${format}`)
+  const handleExportCSV = () => {
+    CSVDownloader({
+      data: filteredData,
+      filename: 'employee_attendance',
+      bom: true,
+      type: Type.Button
+    })
   }
 
   return (
@@ -43,7 +48,7 @@ export function EmployeeAttendanceComponent() {
           
           <div className="flex justify-between items-center mb-4">
             <div className="space-x-2">
-              <Button onClick={() => handleExport('excel')} style={{ backgroundColor: '#81A1C1', color: 'white' }}>
+              <Button onClick={handleExportCSV} style={{ backgroundColor: '#81A1C1', color: 'white' }}>
                 Exportar Excel
               </Button>
             </div>
